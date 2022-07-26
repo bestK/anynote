@@ -28,12 +28,9 @@
             }
             var your_link_dom = document.getElementById("your_link")
             request("GET", `${server_api}/set?${key}=${value}`, function (xhttp) {
-                if (xhttp.readyState === xhttp.DONE) {
-                    if (xhttp.status === 200) {
-                        console.log(xhttp.response);
-                        console.log(xhttp.responseText);
-                        your_link_dom.innerText = xhttp.responseText;
-                    }
+                console.log(xhttp)
+                if (xhttp.readyState === xhttp.DONE && xhttp.status === 200) {
+                    your_link_dom.innerText = xhttp.responseText;
                 }
             })
 
@@ -42,7 +39,7 @@
         function request(method, action, cb) {
             const xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = cb(xhttp)
-            xhttp.open(method, action);
+            xhttp.open(method, action, true);
             xhttp.send();
         }
 
@@ -54,6 +51,8 @@
             return result;
         }
     </script>
+
+
 </head>
 
 <body>
@@ -66,7 +65,6 @@
   <body class="h-full">
   ```
 -->
-
 
 
     <div class="min-h-full">
@@ -177,13 +175,17 @@
 
                 <div class="px-4 py-3 bg-gray-50 text-left sm:px-6">
                     <p class="underline" id="your_link"></p>
+                    <a class="text-blue-600" href="https://github.com/bestK/anynote">Fork me on GitHub</a>
                 </div>
+
 
 
                 <!-- /End replace -->
             </div>
         </main>
     </div>
+
+
 
 </body>
 
