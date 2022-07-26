@@ -27,6 +27,7 @@
                 return
             }
             request("GET", `${server_api}/set?${key}=${value}`, function (xhttp) {
+                console.log(`xhttp is:`,xhttp)
                 alert(xhttp.responseText)
             })
 
