@@ -41,7 +41,7 @@
 
         function request(method, action, cb) {
             const xhttp = new XMLHttpRequest();
-            xhttp.onload = cb(xhttp)
+            xhttp.onreadystatechange = cb(xhttp)
             xhttp.open(method, action);
             xhttp.send();
         }
