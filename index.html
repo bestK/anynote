@@ -26,10 +26,15 @@
                 alert('value must not be null!')
                 return
             }
+            var your_link_dom = document.getElementById("your_link")
             request("GET", `${server_api}/set?${key}=${value}`, function (xhttp) {
-                console.log(`xhttp is:`,xhttp)
-                console.log(`xhttp.responseText is:`,xhttp.responseText)
-                alert(xhttp.responseText)
+                if (xhttp.readyState === xhttp.DONE) {
+                    if (xhttp.status === 200) {
+                        console.log(xhttp.response);
+                        console.log(xhttp.responseText);
+                        your_link_dom.innerText = xhttp.responseText;
+                    }
+                }
             })
 
         }
@@ -37,7 +42,6 @@
         function request(method, action, cb) {
             const xhttp = new XMLHttpRequest();
             xhttp.onload = cb(xhttp)
-            console.log(xhttp,'===>>>')
             xhttp.open(method, action);
             xhttp.send();
         }
@@ -64,7 +68,7 @@
 -->
 
 
-    
+
     <div class="min-h-full">
         <nav class="bg-gray-800">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -170,6 +174,12 @@
                     <button type="submit" onclick="submit()"
                         class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Save</button>
                 </div>
+
+                <div class="px-4 py-3 bg-gray-50 text-left sm:px-6">
+                    <p class="underline" id="your_link"></p>
+                </div>
+
+
                 <!-- /End replace -->
             </div>
         </main>
