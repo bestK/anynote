@@ -1,22 +1,27 @@
 LIST_PASSWD = "default_password"
 
-addEventListener("fetch", event => {
+addEventListener("fetch", event => {  
     event.respondWith(handleRequest(event.request))
 })
 const static_ui = "https://bestk.github.io/anynote"
 const server_api = "https://note.anysign.xyz"
-async function handleRequest(request) {
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET,HEAD,POST,OPTIONS',
+  'Access-Control-Max-Age': '86400',
+  'Access-Control-Allow-Headers': "Origin, X-Requested-With, Content-Type, Accept"
+};
+async function handleRequest(request) {  
     url = new URL(request.url)
 
     if (url.pathname === "/") {
         return fetch(static_ui)
     }
-
+  
     if (url.pathname === "/set") {
-        for (var key of url.searchParams.keys()) {
-            await NOTE.put(key, url.searchParams.get(key))
-        }
-        return new Response(`your link is ${server_api}/get?key=${key}`)
+        const req = await readRequestBody(request)
+        await NOTE.put(req.key, req.value)
+        return new Response(`your link is ${server_api}/get?key=${req.key}`,{ headers: corsHeaders})
     }
 
     if (url.pathname === "/get") {
@@ -29,14 +34,42 @@ async function handleRequest(request) {
         const value = await NOTE.list()
         passwd = url.searchParams.get("passwd")
         if (passwd !== LIST_PASSWD) {
-            return new Response("Password not correct", { status: 400 })
+            return new Response("Password not correct", {status: 400})
         }
         let key_list = []
-        for (var key of value.keys) {
+        for(var key of value.keys) {
             key_list.push(key.name)
         }
         return new Response(key_list.join("\r\n"))
     }
 }
 
-// some code form https://blog.jimmytinsley.com/2020/12/18/cloudflare-workers%e7%9a%84kv%e5%8a%9f%e8%83%bd%e4%bd%93%e9%aa%8c/
+
+/**
+ * readRequestBody reads in the incoming request body
+ * Use await readRequestBody(..) in an async function to get the string
+ * @param {Request} request the incoming request to read from
+ */
+async function readRequestBody(request) {
+  const { headers } = request;
+  const contentType = headers.get('content-type') || '';
+  console.log(JSON.stringify(request),'request')
+  if (contentType.includes('application/json')) {
+    return await request.json();
+  } else if (contentType.includes('application/text')) {
+    return request.text();
+  } else if (contentType.includes('text/html')) {
+    return request.text();
+  } else if (contentType.includes('form')) {
+    const formData = await request.formData();
+    const body = {};
+    for (const entry of formData.entries()) {
+      body[entry[0]] = entry[1];
+    }
+    return JSON.stringify(body);
+  } else {
+    // Perhaps some other type of data was submitted in the form
+    // like an image, or some other binary data.
+    return 'a file';
+  }
+}
