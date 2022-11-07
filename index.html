@@ -28,14 +28,14 @@
             }
             var your_link_dom = document.getElementById("your_link")
             var data = {key:value}
-            request("post", `${server_api}/set`,data, function (response) {
+            request("POST", `${server_api}/set`, data, function (response) {
                 console.log(response)
                 your_link_dom.innerText = response;
             })
 
         }
 
-        function request(method, action, cb) {
+        function request(method, action, params, cb) {
             const request = new XMLHttpRequest();
             request.onreadystatechange = function(){
                 if (request.readyState == 4 && request.status == 200) {
@@ -43,7 +43,12 @@
                 }
             }; 
             request.open(method, action, true);
-            request.send();
+            if ('POST' === method) {
+                request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+                request.send(JSON.stringify(params));
+            } else {
+                request.send();
+            }
         }
 
         function randomString(length) {
