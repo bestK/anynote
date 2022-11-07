@@ -19,15 +19,17 @@ async function handleRequest(request) {
     }
   
     if (url.pathname === "/set") {
-        const req = await readRequestBody(request)
-        await NOTE.put(req.key, req.value)
-        return new Response(`your link is ${server_api}/get?key=${req.key}`,{ headers: corsHeaders})
+        const {key,value} = await readRequestBody(request)
+        await NOTE.put(key, value)
+        return new Response(`your link is ${server_api}/${key}`,{ headers: corsHeaders})
     }
 
-    if (url.pathname === "/get") {
-        key = url.searchParams.get("key")
+    if (url.pathname !== "") {
+        key = url.pathname
         const value = await NOTE.get(key)
         return new Response(value)
+    } else{
+        return fetch(static_ui)
     }
 
     if (url.pathname === "/list") {
