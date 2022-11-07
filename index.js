@@ -25,7 +25,7 @@ async function handleRequest(request) {
     }
 
     if (url.pathname !== "") {
-        key = url.pathname
+        key = url.pathname.split('/')[1]
         const value = await NOTE.get(key)
         return new Response(value)
     } else{
