@@ -27,7 +27,8 @@
                 return
             }
             var your_link_dom = document.getElementById("your_link")
-            request("post", `${server_api}/set`,{`${key}`,`${value}`}, function (response) {
+            var data = {`${key}`,`${value}`}
+            request("post", `${server_api}/set`,data, function (response) {
                 console.log(response)
                 your_link_dom.innerText = response;
             })
