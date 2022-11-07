@@ -30,7 +30,7 @@
             var data = {'key':key,'value':value}
             request("POST", `${server_api}/set`, data, function (response) {
                 console.log(response)
-                your_link_dom.innerText = response;
+                your_link_dom.innerhtml = response;
             })
 
         }
