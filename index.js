@@ -21,12 +21,54 @@ async function handleRequest(request) {
     if (url.pathname === "/set") {
         const {key,value} = await readRequestBody(request)
         await NOTE.put(key, value)
-        return new Response(`your link is ${server_api}/${key}`,{ headers: corsHeaders})
+        let res = `SOURCE: <a href = "${server_api}/${key}" target="_blank">${server_api}/${key}</a>`+
+                  `<br/>HTML: <a href = "${server_api}/${key}.html" target="_blank">${server_api}/${key}.html</a>`+
+                  `<br/>MARKDOWN: <a href = "${server_api}/${key}.md" target="_blank">${server_api}/${key}.md</a>`
+        return new Response(res,{ headers: corsHeaders})
     }
 
     if (url.pathname !== "") {
         key = url.pathname.split('/')[1]
+        const isHtml = key.endsWith('.html')
+        const isMD = key.endsWith('.md')
+        if(isHtml||isMD){
+          key = key.split('.')[0]
+        }
         const value = await NOTE.get(key)
+        if(isHtml){
+          const html = `<!DOCTYPE html>
+          <body>
+            ${value}
+          </body>`;
+          return new Response(html, {
+            headers: {
+              'content-type': 'text/html;charset=UTF-8',
+            },
+          });
+        }else if(isMD){
+          const html = `<!doctype html>
+                        <html>
+                        <head>
+                          <meta charset="utf-8"/>
+                          <title>Marked in the browser</title>
+                        </head>
+                        <body>
+                          <div id="content"></div>
+                          <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+                          <script>
+                            document.getElementById('content').innerHTML =
+                              marked.parse('${value}');
+                          </script>
+                        </body>
+                        </html>`;
+          return new Response(html, {
+            headers: {
+              'content-type': 'text/html;charset=UTF-8',
+            },
+          });
+
+        }
+
         return new Response(value)
     } else{
         return fetch(static_ui)
