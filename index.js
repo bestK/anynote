@@ -46,6 +46,8 @@ async function handleRequest(request) {
             },
           });
         }else if(isMD){
+          const md = value.replace(/\n/g, "\\n\\n") 
+        
           const html = `<!doctype html>
                         <html>
                         <head>
@@ -56,8 +58,9 @@ async function handleRequest(request) {
                           <div id="content"></div>
                           <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
                           <script>
+                     
                             document.getElementById('content').innerHTML =
-                              marked.parse('${value}');
+                              marked.parse("${md}");
                           </script>
                         </body>
                         </html>`;
