@@ -46,7 +46,7 @@ async function handleRequest(request) {
             },
           });
         }else if(isMD){
-          const md = value.replace(/\n/g, "\\n\\n") 
+          const md = value.replace(/\n/g, "\\n\\n").replace(/\"/g, "'")
         
           const html = `<!doctype html>
                         <html>
