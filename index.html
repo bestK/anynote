@@ -4,8 +4,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://unpkg.com/@wangeditor/editor@latest/dist/css/style.css" rel="stylesheet">
+
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@wangeditor/editor@latest/dist/index.js"></script>
     <script>
+        
+        const { createEditor, createToolbar } = window.wangEditor
+
+        const editorConfig = {
+            placeholder: 'Type here...',
+            onChange(editor) {
+              const html = editor.getHtml()
+              console.log('editor content', html)
+              // 也可以同步到 <textarea>
+            }
+        }
+
+        const editor = createEditor({
+            selector: '#editor-container',
+            html: '<p><br></p>',
+            config: editorConfig,
+            mode: 'default', // or 'simple'
+        })
+
+        const toolbarConfig = {}
+
+        const toolbar = createToolbar({
+            editor,
+            selector: '#toolbar-container',
+            config: toolbarConfig,
+            mode: 'default', // or 'simple'
+        })
+        
         const server_api = "https://note.anysign.xyz"
 
         tailwind.config = {
@@ -171,9 +202,11 @@
                 <!-- Replace with your content -->
                 <div class="px-4 py-6 sm:px-0">
                     <div class="border-4 border-dashed border-gray-200 rounded-lg h-96">
-                        <textarea id="note"
-                            class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full h-full sm:text-sm border border-gray-300 rounded-md"
-                            placeholder="your text here"></textarea>
+                        <div id="editor—wrapper">
+                            <input type="hidden" id="note"/>
+                            <div id="toolbar-container"><!-- 工具栏 --></div>
+                            <div id="editor-container"><!-- 编辑器 --></div>
+                        </div>
                     </div>
                 </div>
                 <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
