@@ -4,12 +4,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://unpkg.com/@wangeditor/editor@latest/dist/css/style.css" rel="stylesheet">
-
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/@wangeditor/editor@latest/dist/index.js"></script>
+  
     
+    <link rel="stylesheet" href="https://note.anysign.xyz/editor.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/editor-md/1.5.0/editormd.min.js"></script>
+    
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    
+    <script>
 
+        $(function() {
+            var editor = editormd("editor", {
+                // width: "100%",
+                // height: "100%",
+                // markdown: "xxxx",     // dynamic set Markdown text
+                //path : "editor.md/lib/"  // Autoload modules mode, codemirror, marked... dependents libs path
+            });
+        });
+        
+        const server_api = "https://note.anysign.xyz"
+
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        clifford: '#da373d',
+                    }
+                }
+            }
+        }
+
+        function submit() {
+            //var note_dom = document.getElementById('note')
+            var key = randomString(6)
+            //var value = note_dom.value
+            var value = editor.getMakrdown();
+            if (!value) {
+                alert('value must not be null!')
+                return
+            }
+            var your_link_dom = document.getElementById("your_link")
+            var data = {'key':key,'value':value}
+            request("POST", `${server_api}/set`, data, function (response) {
+                console.log(response)
+                your_link_dom.innerHTML = response;
+            })
+
+        }
+
+        function request(method, action, params, cb) {
+            const request = new XMLHttpRequest();
+            request.onreadystatechange = function(){
+                if (request.readyState == 4 && request.status == 200) {
+                    cb(request.responseText); // Another callback here
+                }
+            }; 
+            request.open(method, action, true);
+            if ('POST' === method) {
+                request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+                request.send(JSON.stringify(params));
+            } else {
+                request.send();
+            }
+        }
+
+        function randomString(length) {
+            var str = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            var result = '';
+            for (var i = length; i > 0; --i)
+                result += str[Math.floor(Math.random() * str.length)];
+            return result;
+        }
+
+        const { createEditor, createToolbar } = window.wangEditor
+
+        const editorConfig = {
+            placeholder: 'Type here...',
+            onChange(editor) {
+
+
+            }
+        }
+
+        const editor = createEditor({
+            selector: '#editor-container',
+            html: '<p><br></p>',
+            config: editorConfig,
+            mode: 'simple', // or 'simple'
+        })
+
+        const toolbarConfig = {}
+
+        const toolbar = createToolbar({
+            editor,
+            selector: '#toolbar-container',
+            config: toolbarConfig,
+            mode: 'default', // or 'simple'
+        })
+    
+    </script>
+    
 
 </head>
 
@@ -122,9 +217,7 @@
                 <div class="px-4 py-6 sm:px-0">
                     <div class="border-4 border-dashed border-gray-200 rounded-lg h-96">
                         <div id="editor—wrapper">
-                            <input type="hidden" id="note"/>
-                            <div id="toolbar-container"><!-- 工具栏 --></div>
-                            <div id="editor-container"><!-- 编辑器 --></div>
+                            <div id="editor">
                         </div>
                     </div>
                 </div>
@@ -146,88 +239,7 @@
     </div>
 
 </body>
-<script>
-        
-const server_api = "https://note.anysign.xyz"
-
-tailwind.config = {
-    theme: {
-        extend: {
-            colors: {
-                clifford: '#da373d',
-            }
-        }
-    }
-}
-
-function submit() {
-    //var note_dom = document.getElementById('note')
-    var key = randomString(6)
-    //var value = note_dom.value
-    var value = editor.getText();
-    if (!value) {
-        alert('value must not be null!')
-        return
-    }
-    var your_link_dom = document.getElementById("your_link")
-    var data = {'key':key,'value':value}
-    request("POST", `${server_api}/set`, data, function (response) {
-        console.log(response)
-        your_link_dom.innerHTML = response;
-    })
-
-}
-
-function request(method, action, params, cb) {
-    const request = new XMLHttpRequest();
-    request.onreadystatechange = function(){
-        if (request.readyState == 4 && request.status == 200) {
-            cb(request.responseText); // Another callback here
-        }
-    }; 
-    request.open(method, action, true);
-    if ('POST' === method) {
-        request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-        request.send(JSON.stringify(params));
-    } else {
-        request.send();
-    }
-}
-
-function randomString(length) {
-    var str = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    var result = '';
-    for (var i = length; i > 0; --i)
-        result += str[Math.floor(Math.random() * str.length)];
-    return result;
-}
-
-const { createEditor, createToolbar } = window.wangEditor
-
-const editorConfig = {
-    placeholder: 'Type here...',
-    onChange(editor) {
-
-
-    }
-}
-
-const editor = createEditor({
-    selector: '#editor-container',
-    html: '<p><br></p>',
-    config: editorConfig,
-    mode: 'simple', // or 'simple'
-})
-
-const toolbarConfig = {}
-
-const toolbar = createToolbar({
-    editor,
-    selector: '#toolbar-container',
-    config: toolbarConfig,
-    mode: 'default', // or 'simple'
-})
-</script>    
+ 
     
 
 </html>
