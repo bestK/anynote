@@ -10,32 +10,7 @@
     <script src="https://unpkg.com/@wangeditor/editor@latest/dist/index.js"></script>
     <script>
         
-        const { createEditor, createToolbar } = window.wangEditor
-
-        const editorConfig = {
-            placeholder: 'Type here...',
-            onChange(editor) {
-              const html = editor.getHtml()
-              console.log('editor content', html)
-              // 也可以同步到 <textarea>
-            }
-        }
-
-        const editor = createEditor({
-            selector: '#editor-container',
-            html: '<p><br></p>',
-            config: editorConfig,
-            mode: 'default', // or 'simple'
-        })
-
-        const toolbarConfig = {}
-
-        const toolbar = createToolbar({
-            editor,
-            selector: '#toolbar-container',
-            config: toolbarConfig,
-            mode: 'default', // or 'simple'
-        })
+        
         
         const server_api = "https://note.anysign.xyz"
 
@@ -50,9 +25,10 @@
         }
 
         function submit() {
-            var note_dom = document.getElementById('note')
+            //var note_dom = document.getElementById('note')
             var key = randomString(6)
-            var value = note_dom.value
+            //var value = note_dom.value
+            var value = editor.getHtml();
             if (!value) {
                 alert('value must not be null!')
                 return
@@ -89,6 +65,32 @@
                 result += str[Math.floor(Math.random() * str.length)];
             return result;
         }
+        
+        const { createEditor, createToolbar } = window.wangEditor
+
+        const editorConfig = {
+            placeholder: 'Type here...',
+            onChange(editor) {
+              
+              
+            }
+        }
+
+        const editor = createEditor({
+            selector: '#editor-container',
+            html: '<p><br></p>',
+            config: editorConfig,
+            mode: 'default', // or 'simple'
+        })
+
+        const toolbarConfig = {}
+
+        const toolbar = createToolbar({
+            editor,
+            selector: '#toolbar-container',
+            config: toolbarConfig,
+            mode: 'default', // or 'simple'
+        })
     </script>
 
 
