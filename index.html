@@ -201,7 +201,7 @@ function randomString(length) {
     return result;
 }
 
-const { createEditor, createToolbar } = window.wangEditor
+const { createEditor, createToolbar, Boot } = window.wangEditor
 
 const editorConfig = {
     placeholder: 'Type here...',
@@ -218,7 +218,7 @@ const editor = createEditor({
     mode: 'simple', // or 'simple'
 })
 
-editor.Boot.registerModule(window.WangEditorPluginMD)
+Boot.registerModule(window.WangEditorPluginMD)
 
 const toolbarConfig = {}
 
