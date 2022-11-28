@@ -8,8 +8,7 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@wangeditor/editor@latest/dist/index.js"></script>
-    
-
+    <script src="https://unpkg.com/@wangeditor/plugin-md@1.0.0/dist/index.js"></script>
 
 </head>
 
@@ -218,6 +217,8 @@ const editor = createEditor({
     config: editorConfig,
     mode: 'simple', // or 'simple'
 })
+
+editor.Boot.registerModule(window.WangEditorPluginMD)
 
 const toolbarConfig = {}
 
