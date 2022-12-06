@@ -4,231 +4,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://unpkg.com/@wangeditor/editor@latest/dist/css/style.css" rel="stylesheet">
-
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/@wangeditor/editor@latest/dist/index.js"></script>
-    <script src="https://unpkg.com/@wangeditor/plugin-md@1.0.0/dist/index.js"></script>
-
+    <link href="https://unpkg.com/@primer/css@^20.2.4/dist/primer.css" rel="stylesheet" />
 </head>
 
-<body>
-    <!-- This example requires Tailwind CSS v2.0+ -->
-    <!--
-  This example requires updating your template:
-
-  ```
-  <html class="h-full bg-gray-100">
-  <body class="h-full">
-  ```
--->
-
-
-    <div class="min-h-full">
-        <nav class="bg-gray-800">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex items-center justify-between h-16">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <img class="h-8 w-8" src="https://tailwindui.com/img/logos/workflow-mark-indigo-500.svg"
-                                alt="Workflow">
-                        </div>
-                        <div class="hidden md:block">
-                            <div class="ml-10 flex items-baseline space-x-4">
-                                <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
-                                <a href="#" class="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium"
-                                    aria-current="page">AnyNote</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="hidden md:block">
-                        <div class="ml-4 flex items-center md:ml-6">
-                            <button type="button"
-                                class="bg-gray-800 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
-                                <span class="sr-only">View notifications</span>
-                                <!-- Heroicon name: outline/bell -->
-                                <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="2" stroke="currentColor" aria-hidden="true">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                                </svg>
-                            </button>
-
-                            <!-- Profile dropdown -->
-                            <div class="ml-3 relative">
-                                <div>
-                                    <button type="button"
-                                        class="max-w-xs bg-gray-800 rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
-                                        id="user-menu-button" aria-expanded="false" aria-haspopup="true">
-                                        <span class="sr-only">Open user menu</span>
-                                        <img class="h-8 w-8 rounded-full"
-                                            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                                            alt="">
-                                    </button>
-                                </div>
-
-                                <!--
-                  Dropdown menu, show/hide based on menu state.
-  
-                  Entering: "transition ease-out duration-100"
-                    From: "transform opacity-0 scale-95"
-                    To: "transform opacity-100 scale-100"
-                  Leaving: "transition ease-in duration-75"
-                    From: "transform opacity-100 scale-100"
-                    To: "transform opacity-0 scale-95"
-                -->
-
-                            </div>
-                        </div>
-                    </div>
-                    <div class="-mr-2 flex md:hidden">
-                        <!-- Mobile menu button -->
-                        <button type="button"
-                            class="bg-gray-800 inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
-                            aria-controls="mobile-menu" aria-expanded="false">
-                            <span class="sr-only">Open main menu</span>
-                            <!--
-                Heroicon name: outline/menu
-  
-                Menu open: "hidden", Menu closed: "block"
-              -->
-                            <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-                            </svg>
-                            <!--
-                Heroicon name: outline/x
-  
-                Menu open: "block", Menu closed: "hidden"
-              -->
-                            <svg class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
+<body class="m-3 p-1 p-1">
+    <form>
+        <div class="form-group">
+            <div class="form-group-header">
+                <h1 class="text-normal lh-condensed">AnyNote</h1>
             </div>
-
-            <!-- Mobile menu, show/hide based on menu state. -->
-
-        </nav>
-
-
-        <main>
-            <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-                <!-- Replace with your content -->
-                <div class="px-4 py-6 sm:px-0">
-                    <div class="border-4 border-dashed border-gray-200 rounded-lg h-96">
-                        <div id="editor—wrapper">
-                            <input type="hidden" id="note"/>
-                            <div id="toolbar-container"><!-- 工具栏 --></div>
-                            <div id="editor-container"><!-- 编辑器 --></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
-                    <button type="submit" onclick="submit()"
-                        class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Save</button>
-                </div>
-
-                <div class="px-4 py-3 bg-gray-50 text-left sm:px-6">
-                    <p class="underline" id="your_link"></p>
-                    <a class="text-blue-600" href="https://github.com/bestK/anynote">Fork me on GitHub</a>
-                </div>
-
-
-
-                <!-- /End replace -->
+            <div class="form-group-body">
+                <textarea class="form-control" placeholder="Type here..." id="note"></textarea>
             </div>
-        </main>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary" onclick="submit()">Submit</button>
+        </div>
+    </form>
+
+
+    <div class="d-flex flex-column flex-md-row flex-items-center flex-md-items-center" style="display: none;">
+        <div
+            class="col-12 col-md-10 d-flex flex-column flex-justify-center flex-items-center flex-md-items-start">
+            <h1 class="text-normal lh-condensed">Links</h1>
+            <a class="link" href="https://github.com/bestK/anynote">Source code</a>
+            <div id="your_link">
+
+            </div> 
+        </div>
     </div>
+
+
 
 </body>
 <script>
-        
-const server_api = "https://note.anysign.xyz"
 
-tailwind.config = {
-    theme: {
-        extend: {
-            colors: {
-                clifford: '#da373d',
+    const server_api = "https://note.anysign.xyz"
+
+
+    function submit() {
+        var note_dom = document.getElementById('note')
+        var key = randomString(6)
+        var value = note_dom.value
+        var value = editor.getText();
+        if (!value) {
+            alert('value must not be null!')
+            return
+        }
+        var your_link_dom = document.getElementById("your_link")
+        var data = { 'key': key, 'value': value }
+        request("POST", `${server_api}/set`, data, function (response) {
+            your_link_dom.innerHTML = response;
+        })
+
+    }
+
+    function request(method, action, params, cb) {
+        const request = new XMLHttpRequest();
+        request.onreadystatechange = function () {
+            if (request.readyState == 4 && request.status == 200) {
+                cb(request.responseText); // Another callback here
             }
+        };
+        request.open(method, action, true);
+        if ('POST' === method) {
+            request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            request.send(JSON.stringify(params));
+        } else {
+            request.send();
         }
     }
-}
 
-function submit() {
-    //var note_dom = document.getElementById('note')
-    var key = randomString(6)
-    //var value = note_dom.value
-    var value = editor.getText();
-    if (!value) {
-        alert('value must not be null!')
-        return
+    function randomString(length) {
+        var str = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        var result = '';
+        for (var i = length; i > 0; --i)
+            result += str[Math.floor(Math.random() * str.length)];
+        return result;
     }
-    var your_link_dom = document.getElementById("your_link")
-    var data = {'key':key,'value':value}
-    request("POST", `${server_api}/set`, data, function (response) {
-        console.log(response)
-        your_link_dom.innerHTML = response;
-    })
 
-}
+</script>
 
-function request(method, action, params, cb) {
-    const request = new XMLHttpRequest();
-    request.onreadystatechange = function(){
-        if (request.readyState == 4 && request.status == 200) {
-            cb(request.responseText); // Another callback here
-        }
-    }; 
-    request.open(method, action, true);
-    if ('POST' === method) {
-        request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-        request.send(JSON.stringify(params));
-    } else {
-        request.send();
-    }
-}
-
-function randomString(length) {
-    var str = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    var result = '';
-    for (var i = length; i > 0; --i)
-        result += str[Math.floor(Math.random() * str.length)];
-    return result;
-}
-
-const { createEditor, createToolbar, Boot } = window.wangEditor
-
-const editorConfig = {
-    placeholder: 'Type here...',
-    onChange(editor) {
-
-
-    }
-}
-
-const editor = createEditor({
-    selector: '#editor-container',
-    html: '<p><br></p>',
-    config: editorConfig,
-    mode: 'simple', // or 'simple'
-})
-
-Boot.registerModule(window.WangEditorPluginMD)
-
-const toolbarConfig = {}
-
-const toolbar = createToolbar({
-    editor,
-    selector: '#toolbar-container',
-    config: toolbarConfig,
-    mode: 'simple', // or 'simple'
-})
-</script>    
-    
 
 </html>
