@@ -41,11 +41,9 @@
 
 
     function submit() {
-        alert()
         var note_dom = document.getElementById('note')
         var key = randomString(6)
         var value = note_dom.value
-        var value = editor.getText();
         if (!value) {
             alert('value must not be null!')
             return
