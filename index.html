@@ -8,30 +8,27 @@
 </head>
 
 <body class="m-3 p-1 p-1">
-    <form>
-        <div class="form-group">
-            <div class="form-group-header">
-                <h1 class="text-normal lh-condensed">AnyNote</h1>
-            </div>
-            <div class="form-group-body">
-                <textarea class="form-control" placeholder="Type here..." id="note"></textarea>
-            </div>
+    <div class="form-group">
+        <div class="form-group-header">
+            <h1 class="text-normal lh-condensed">AnyNote</h1>
         </div>
-
-        <div class="form-actions">
-            <button class="btn btn-primary" onclick="submit()">Submit</button>
+        <div class="form-group-body">
+            <textarea class="form-control" placeholder="Type here..." id="note"></textarea>
         </div>
-    </form>
+    </div>
+
+    <div class="form-actions">
+        <button class="btn btn-primary" onclick="submit()">Submit</button>
+    </div>
 
 
-    <div class="d-flex flex-column flex-md-row flex-items-center flex-md-items-center" style="display: none;">
-        <div
-            class="col-12 col-md-10 d-flex flex-column flex-justify-center flex-items-center flex-md-items-start">
+    <div class="d-flex flex-column flex-md-row flex-items-center flex-md-items-center">
+        <div class="col-12 col-md-10 d-flex flex-column flex-justify-center flex-items-center flex-md-items-start">
             <h1 class="text-normal lh-condensed">Links</h1>
             <a class="link" href="https://github.com/bestK/anynote">Source code</a>
             <div id="your_link">
 
-            </div> 
+            </div>
         </div>
     </div>
 
@@ -44,6 +41,7 @@
 
 
     function submit() {
+        alert()
         var note_dom = document.getElementById('note')
         var key = randomString(6)
         var value = note_dom.value
