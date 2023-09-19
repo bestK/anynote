@@ -4,7 +4,7 @@ addEventListener("fetch", event => {
     event.respondWith(handleRequest(event.request))
 })
 const static_ui = "https://bestk.github.io/anynote"
-const server_api = `${window.location.protocol}\\${window.location.host}`
+const server_api = `${window.location.protocol}//${window.location.host}`
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET,HEAD,POST,OPTIONS',
