@@ -39,6 +39,15 @@ async function handleRequest(request) {
             key = key.split('.')[0];
         }
         const value = await NOTE.get(key);
+
+        const { cf } = request;
+
+        // 检查 IP 是否来自中国
+        const isChina = cf && cf.country === 'CN';
+        const jsdelivrHost = isChina
+            ? 'jsd.onmicrosoft.cn'
+            : 'cdn.jsdelivr.net';
+
         if (isHtml) {
             const html = `<!DOCTYPE html>
           <body>
@@ -58,7 +67,7 @@ async function handleRequest(request) {
                         </head>
                         <body>
                           <div id="content"></div>
-                          <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+                          <script src="https://${jsdelivrHost}/npm/marked/marked.min.js"></script>
                           <script>
                      
                             document.getElementById('content').innerHTML =
@@ -81,9 +90,9 @@ async function handleRequest(request) {
                     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
                     <title>Simple code editor for vue.js</title>
                     <!-- css -->
-                    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/justcaliturner/simple-code-editor@master/browser/css/simple-code-editor.css" />
-                    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/justcaliturner/simple-code-editor@master/browser/css/themes/themes-base16.css" />
-                    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/justcaliturner/simple-code-editor@master/browser/css/themes/themes.css" />
+                    <link rel="stylesheet" href="https://${jsdelivrHost}/gh/justcaliturner/simple-code-editor@master/browser/css/simple-code-editor.css" />
+                    <link rel="stylesheet" href="https://${jsdelivrHost}/gh/justcaliturner/simple-code-editor@master/browser/css/themes/themes-base16.css" />
+                    <link rel="stylesheet" href="https://${jsdelivrHost}/gh/justcaliturner/simple-code-editor@master/browser/css/themes/themes.css" />
                     <style>
                       ::-webkit-scrollbar {
                         width: 0;
@@ -107,9 +116,9 @@ async function handleRequest(request) {
                      
                     </div>
                     <!-- js -->
-                    <script src="https://cdn.jsdelivr.net/gh/justcaliturner/simple-code-editor@master/browser/deps/vue@3.3.4.min.js"></script>
-                    <script src="https://cdn.jsdelivr.net/gh/justcaliturner/simple-code-editor@master/browser/deps/highlight.min.js"></script>
-                    <script src="https://cdn.jsdelivr.net/gh/justcaliturner/simple-code-editor@master/browser/js/simple-code-editor.js"></script>
+                    <script src="https://${jsdelivrHost}/gh/justcaliturner/simple-code-editor@master/browser/deps/vue@3.3.4.min.js"></script>
+                    <script src="https://${jsdelivrHost}/gh/justcaliturner/simple-code-editor@master/browser/deps/highlight.min.js"></script>
+                    <script src="https://${jsdelivrHost}/gh/justcaliturner/simple-code-editor@master/browser/js/simple-code-editor.js"></script>
                     
                     <script>
                     const app = Vue.createApp({
