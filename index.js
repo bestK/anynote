@@ -30,6 +30,19 @@ async function handleRequest(request) {
         return new Response(res, { headers: corsHeaders });
     }
 
+    if (url.pathname === '/list') {
+        const value = await NOTE.list();
+        passwd = url.searchParams.get('passwd');
+        if (passwd !== LIST_PASSWD) {
+            return new Response('Password not correct', { status: 400 });
+        }
+        let key_list = [];
+        for (var key of value.keys) {
+            key_list.push(key.name);
+        }
+        return new Response(key_list.join('\r\n'));
+    }
+
     if (url.pathname !== '') {
         key = url.pathname.split('/')[1];
         const isHtml = key.endsWith('.html');
@@ -71,7 +84,7 @@ async function handleRequest(request) {
                           <script>
                      
                             document.getElementById('content').innerHTML =
-                              marked.parse(\`${md}\`);
+                              marked.parse(\`${value}\`);
                           </script>
                         </body>
                         </html>`;
@@ -145,21 +158,9 @@ async function handleRequest(request) {
         }
 
         return new Response(value);
-    } else {
-        return fetch(static_ui);
     }
-
-    if (url.pathname === '/list') {
-        const value = await NOTE.list();
-        passwd = url.searchParams.get('passwd');
-        if (passwd !== LIST_PASSWD) {
-            return new Response('Password not correct', { status: 400 });
-        }
-        let key_list = [];
-        for (var key of value.keys) {
-            key_list.push(key.name);
-        }
-        return new Response(key_list.join('\r\n'));
+    else {
+        return fetch(static_ui);
     }
 }
 
