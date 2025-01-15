@@ -83,8 +83,7 @@ async function handleRequest(request) {
                           <script src="https://${jsdelivrHost}/npm/marked/marked.min.js"></script>
                           <script>
                      
-                            document.getElementById('content').innerHTML =
-                              marked.parse(\`${value}\`);
+                            document.getElementById('content').innerHTML = marked.parse(${JSON.stringify(value)});
                           </script>
                         </body>
                         </html>`;
