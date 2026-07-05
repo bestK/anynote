@@ -463,7 +463,7 @@ async function handleRequest(request) {
       </div>
       <div class="gist-body">
         <div class="gist-gutter" id="gutter" aria-hidden="true">1</div>
-        <pre><code id="code"></code></pre>
+        <pre><code id="code" class="hljs"></code></pre>
       </div>
     </div>
   </main>
