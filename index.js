@@ -72,24 +72,270 @@ async function handleRequest(request) {
                 },
             });
         } else if (isMD) {
+            if (value === null) {
+                return new Response('Note not found', {
+                    status: 404,
+                    headers: {
+                        'content-type': 'text/plain;charset=UTF-8',
+                        'X-Content-Type-Options': 'nosniff',
+                        'Referrer-Policy': 'no-referrer',
+                    },
+                });
+            }
+
+            const markdown = JSON.stringify(value || '').replace(/</g, '\\u003c');
             const html = `<!doctype html>
-                        <html>
+                        <html lang="zh-CN">
                         <head>
-                          <meta charset="utf-8"/>
-                          <title>Marked in the browser</title>
+                          <meta charset="utf-8" />
+                          <meta name="viewport" content="width=device-width, initial-scale=1" />
+                          <title>AnyNote Markdown Preview</title>
+                          <link rel="stylesheet" href="https://${jsdelivrHost}/npm/@highlightjs/cdn-assets@11.9.0/styles/github-dark.min.css" />
+                          <style>
+                            :root {
+                              --page-bg: #f6f3ea;
+                              --paper-bg: #fffdf7;
+                              --ink: #24221f;
+                              --muted: #706b62;
+                              --line: #ded7c8;
+                              --accent: #2f6f73;
+                              --accent-soft: rgba(47, 111, 115, 0.12);
+                              --code-bg: #162021;
+                            }
+
+                            * {
+                              box-sizing: border-box;
+                            }
+
+                            html {
+                              -webkit-text-size-adjust: 100%;
+                            }
+
+                            body {
+                              margin: 0;
+                              min-height: 100vh;
+                              background:
+                                radial-gradient(circle at top left, rgba(47, 111, 115, 0.14), transparent 32rem),
+                                var(--page-bg);
+                              color: var(--ink);
+                              font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+                              font-size: clamp(16px, 1.6vw, 18px);
+                              line-height: 1.75;
+                            }
+
+                            .page-shell {
+                              width: min(100% - 32px, 860px);
+                              margin: 0 auto;
+                              padding: clamp(24px, 6vw, 72px) 0;
+                            }
+
+                            .markdown-body {
+                              overflow: hidden;
+                              padding: clamp(22px, 5vw, 56px);
+                              border: 1px solid var(--line);
+                              border-radius: 28px;
+                              background: rgba(255, 253, 247, 0.94);
+                              box-shadow: 0 24px 80px rgba(47, 41, 31, 0.12);
+                            }
+
+                            .markdown-body:empty::before {
+                              content: 'This note is empty.';
+                              color: var(--muted);
+                            }
+
+                            .markdown-body > :first-child {
+                              margin-top: 0;
+                            }
+
+                            .markdown-body > :last-child {
+                              margin-bottom: 0;
+                            }
+
+                            .markdown-body h1,
+                            .markdown-body h2,
+                            .markdown-body h3,
+                            .markdown-body h4,
+                            .markdown-body h5,
+                            .markdown-body h6 {
+                              margin: 1.7em 0 0.65em;
+                              color: var(--ink);
+                              font-weight: 760;
+                              line-height: 1.18;
+                              letter-spacing: -0.035em;
+                            }
+
+                            .markdown-body h1 {
+                              padding-bottom: 0.45em;
+                              border-bottom: 1px solid var(--line);
+                              font-size: clamp(2.1rem, 7vw, 3.7rem);
+                            }
+
+                            .markdown-body h2 {
+                              font-size: clamp(1.55rem, 4.5vw, 2.25rem);
+                            }
+
+                            .markdown-body h3 {
+                              font-size: clamp(1.25rem, 3.2vw, 1.55rem);
+                            }
+
+                            .markdown-body p,
+                            .markdown-body ul,
+                            .markdown-body ol,
+                            .markdown-body blockquote,
+                            .markdown-body pre,
+                            .markdown-body table {
+                              margin: 1.1em 0;
+                            }
+
+                            .markdown-body a {
+                              color: var(--accent);
+                              text-decoration-thickness: 0.08em;
+                              text-underline-offset: 0.18em;
+                              overflow-wrap: anywhere;
+                            }
+
+                            .markdown-body a:focus-visible {
+                              outline: 3px solid var(--accent-soft);
+                              outline-offset: 3px;
+                              border-radius: 4px;
+                            }
+
+                            .markdown-body blockquote {
+                              margin-left: 0;
+                              padding: 0.1rem 0 0.1rem 1.1rem;
+                              border-left: 4px solid var(--accent);
+                              color: var(--muted);
+                              background: linear-gradient(90deg, var(--accent-soft), transparent 75%);
+                            }
+
+                            .markdown-body hr {
+                              height: 1px;
+                              margin: 2rem 0;
+                              border: 0;
+                              background: var(--line);
+                            }
+
+                            .markdown-body img {
+                              max-width: 100%;
+                              height: auto;
+                              border-radius: 18px;
+                            }
+
+                            .markdown-body table {
+                              display: block;
+                              width: 100%;
+                              border-collapse: collapse;
+                              overflow-x: auto;
+                              -webkit-overflow-scrolling: touch;
+                            }
+
+                            .markdown-body th,
+                            .markdown-body td {
+                              padding: 0.65rem 0.8rem;
+                              border: 1px solid var(--line);
+                              text-align: left;
+                              vertical-align: top;
+                            }
+
+                            .markdown-body th {
+                              background: rgba(47, 111, 115, 0.08);
+                              font-weight: 700;
+                            }
+
+                            .markdown-body :not(pre) > code {
+                              padding: 0.16em 0.38em;
+                              border-radius: 0.4em;
+                              background: var(--accent-soft);
+                              color: #244f52;
+                              font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+                              font-size: 0.9em;
+                            }
+
+                            .markdown-body pre {
+                              max-width: 100%;
+                              padding: 1rem;
+                              overflow-x: auto;
+                              border: 1px solid rgba(255, 255, 255, 0.08);
+                              border-radius: 16px;
+                              background: var(--code-bg);
+                              box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+                              -webkit-overflow-scrolling: touch;
+                            }
+
+                            .markdown-body pre code {
+                              display: block;
+                              padding: 0;
+                              background: transparent;
+                              color: inherit;
+                              font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+                              font-size: 0.9rem;
+                              line-height: 1.65;
+                            }
+
+                            @media (max-width: 560px) {
+                              .page-shell {
+                                width: min(100% - 20px, 860px);
+                                padding: 10px 0;
+                              }
+
+                              .markdown-body {
+                                border-radius: 18px;
+                              }
+                            }
+                          </style>
                         </head>
                         <body>
-                          <div id="content"></div>
-                          <script src="https://${jsdelivrHost}/npm/marked/marked.min.js"></script>
+                          <main class="page-shell">
+                            <article id="content" class="markdown-body"></article>
+                          </main>
+                          <script src="https://${jsdelivrHost}/npm/marked@12.0.2/marked.min.js"></script>
+                          <script src="https://${jsdelivrHost}/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+                          <script src="https://${jsdelivrHost}/npm/@highlightjs/cdn-assets@11.9.0/highlight.min.js"></script>
                           <script>
-                     
-                            document.getElementById('content').innerHTML = marked.parse(${JSON.stringify(value)});
+                            const markdown = ${markdown};
+                            const content = document.getElementById('content');
+
+                            try {
+                              marked.setOptions({
+                                gfm: true,
+                                breaks: false,
+                              });
+
+                              const rawHtml = marked.parse(markdown);
+                              const cleanHtml = DOMPurify.sanitize(rawHtml, {
+                                USE_PROFILES: { html: true },
+                              });
+
+                              content.innerHTML = cleanHtml;
+
+                              if (window.hljs) {
+                                content.querySelectorAll('pre code').forEach((block) => {
+                                  hljs.highlightElement(block);
+                                });
+                              }
+
+                              content.querySelectorAll('a[href]').forEach((link) => {
+                                if (link.hostname !== location.hostname) {
+                                  link.target = '_blank';
+                                  link.rel = 'noopener noreferrer';
+                                }
+                              });
+
+                              const title = content.querySelector('h1');
+                              if (title && title.textContent.trim()) {
+                                document.title = title.textContent.trim();
+                              }
+                            } catch (error) {
+                              content.textContent = markdown || 'This note is empty.';
+                            }
                           </script>
                         </body>
                         </html>`;
             return new Response(html, {
                 headers: {
                     'content-type': 'text/html;charset=UTF-8',
+                    'X-Content-Type-Options': 'nosniff',
+                    'Referrer-Policy': 'no-referrer',
                 },
             });
         } else if (isGist) {
