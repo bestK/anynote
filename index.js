@@ -14,11 +14,317 @@ const corsHeaders = {
     'Access-Control-Allow-Headers':
         'Origin, X-Requested-With, Content-Type, Accept',
 };
+// 首页（内联，避免依赖外部 gh-page）。前端脚本里的 ${...} 需转义为 \${...}
+const HOME_HTML = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AnyNote · share text, code & markdown</title>
+  <style>
+    :root {
+      --page-bg: #f6f3ea;
+      --paper-bg: #fffdf7;
+      --ink: #24221f;
+      --muted: #706b62;
+      --line: #ded7c8;
+      --accent: #2f6f73;
+      --accent-ink: #ffffff;
+      --accent-soft: rgba(47, 111, 115, 0.12);
+      --code-bg: #0f1717;
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background:
+        radial-gradient(circle at top left, rgba(47, 111, 115, 0.14), transparent 32rem),
+        var(--page-bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    .shell {
+      width: min(100% - 32px, 720px);
+      margin: 0 auto;
+      padding: clamp(28px, 7vw, 72px) 0 32px;
+      flex: 1 0 auto;
+    }
+    header { margin-bottom: 24px; }
+    .brand {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 10px;
+      font-size: clamp(2rem, 6vw, 2.8rem);
+      font-weight: 780;
+      letter-spacing: -0.04em;
+    }
+    .brand .dot { color: var(--accent); }
+    .tagline { margin: 6px 0 0; color: var(--muted); }
+    .card {
+      padding: clamp(18px, 4vw, 28px);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(255, 253, 247, 0.94);
+      box-shadow: 0 24px 80px rgba(47, 41, 31, 0.12);
+    }
+    label { display: block; font-weight: 640; margin-bottom: 8px; }
+    textarea {
+      width: 100%;
+      min-height: 220px;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--paper-bg);
+      color: var(--ink);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 14px;
+      line-height: 1.6;
+      resize: vertical;
+    }
+    textarea:focus,
+    input:focus { outline: 3px solid var(--accent-soft); outline-offset: 2px; border-color: var(--accent); }
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      gap: 14px;
+      margin-top: 16px;
+    }
+    .field { flex: 1 1 220px; }
+    .field input {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--paper-bg);
+      color: var(--ink);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 14px;
+    }
+    .hint { margin: 6px 2px 0; font-size: 12.5px; color: var(--muted); }
+    button {
+      appearance: none;
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 26px;
+      background: var(--accent);
+      color: var(--accent-ink);
+      font-size: 15px;
+      font-weight: 640;
+      cursor: pointer;
+      transition: transform 0.12s, opacity 0.12s;
+    }
+    button:hover { opacity: 0.92; }
+    button:active { transform: translateY(1px); }
+    button:disabled { opacity: 0.5; cursor: default; }
+    .result { margin-top: 22px; display: none; }
+    .result.show { display: block; }
+    .result h2 { margin: 0 0 12px; font-size: 1rem; color: var(--muted); font-weight: 640; }
+    .link-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--paper-bg);
+      margin-bottom: 10px;
+    }
+    .link-row .tag {
+      flex: 0 0 78px;
+      font: 600 11px ui-monospace, monospace;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    .link-row a {
+      flex: 1 1 auto;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--ink);
+      text-decoration: none;
+      font-family: ui-monospace, monospace;
+      font-size: 13px;
+    }
+    .link-row a:hover { text-decoration: underline; }
+    .copy {
+      flex: 0 0 auto;
+      padding: 5px 12px;
+      font-size: 12.5px;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid var(--line);
+      font-weight: 600;
+    }
+    .error { margin-top: 14px; color: #b3261e; font-size: 14px; min-height: 1.2em; }
+    footer {
+      flex-shrink: 0;
+      padding: 20px 0 28px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    footer a { color: var(--accent); }
+    @media (max-width: 480px) {
+      .card { border-radius: 16px; }
+      #submit { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div class="brand">AnyNote<span class="dot">.</span></div>
+      <p class="tagline">Share text, code &amp; markdown with a single link.</p>
+    </header>
+
+    <section class="card">
+      <label for="note">Your note</label>
+      <textarea id="note" placeholder="Paste text, code, or markdown here…" autofocus></textarea>
+
+      <div class="row">
+        <div class="field">
+          <input id="key" type="text" placeholder="custom-key (optional)" autocomplete="off" spellcheck="false" />
+          <p class="hint">Leave blank for a random key. Letters, digits, - and _ only.</p>
+        </div>
+        <button id="submit" type="button">Create link</button>
+      </div>
+
+      <p class="error" id="error"></p>
+
+      <div class="result" id="result">
+        <h2>Your links</h2>
+        <div id="links"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Open source on
+    <a href="https://github.com/bestK/anynote" target="_blank" rel="noopener">GitHub</a>
+    · runs on Cloudflare Workers
+  </footer>
+
+  <script>
+    const api = location.protocol + '//' + location.host;
+    const noteEl = document.getElementById('note');
+    const keyEl = document.getElementById('key');
+    const btn = document.getElementById('submit');
+    const errEl = document.getElementById('error');
+    const resultEl = document.getElementById('result');
+    const linksEl = document.getElementById('links');
+
+    const VIEWS = [
+      { tag: 'source', suffix: '' },
+      { tag: 'html', suffix: '.html' },
+      { tag: 'markdown', suffix: '.md' },
+      { tag: 'gist', suffix: '.gist' },
+    ];
+
+    function randomKey(n) {
+      const cs = 'abcdefghijklmnopqrstuvwxyz0123456789';
+      let s = '';
+      for (let i = 0; i < n; i++) s += cs[Math.floor(Math.random() * cs.length)];
+      return s;
+    }
+
+    function renderLinks(key) {
+      linksEl.textContent = '';
+      for (const v of VIEWS) {
+        const href = api + '/' + encodeURIComponent(key) + v.suffix;
+        const row = document.createElement('div');
+        row.className = 'link-row';
+
+        const tag = document.createElement('span');
+        tag.className = 'tag';
+        tag.textContent = v.tag;
+
+        const a = document.createElement('a');
+        a.href = href;
+        a.target = '_blank';
+        a.rel = 'noopener';
+        a.textContent = href;
+
+        const copy = document.createElement('button');
+        copy.className = 'copy';
+        copy.type = 'button';
+        copy.textContent = 'Copy';
+        copy.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(href);
+            copy.textContent = 'Copied';
+            setTimeout(() => { copy.textContent = 'Copy'; }, 1400);
+          } catch (e) {
+            copy.textContent = 'Failed';
+            setTimeout(() => { copy.textContent = 'Copy'; }, 1400);
+          }
+        });
+
+        row.append(tag, a, copy);
+        linksEl.appendChild(row);
+      }
+      resultEl.classList.add('show');
+    }
+
+    async function submit() {
+      const value = noteEl.value;
+      errEl.textContent = '';
+      if (!value.trim()) {
+        errEl.textContent = 'Note must not be empty.';
+        return;
+      }
+      let key = keyEl.value.trim();
+      if (key && !/^[A-Za-z0-9_-]+$/.test(key)) {
+        errEl.textContent = 'Key may contain letters, digits, - and _ only.';
+        return;
+      }
+      if (!key) key = randomKey(6);
+
+      btn.disabled = true;
+      btn.textContent = 'Saving…';
+      try {
+        const res = await fetch(api + '/set', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+          body: JSON.stringify({ key, value }),
+        });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        renderLinks(key);
+      } catch (e) {
+        errEl.textContent = 'Failed to save: ' + e.message;
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Create link';
+      }
+    }
+
+    btn.addEventListener('click', submit);
+    noteEl.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') submit();
+    });
+  </script>
+</body>
+</html>`;
+
 async function handleRequest(request) {
     url = new URL(request.url);
 
     if (url.pathname === '/') {
-        return fetch(static_ui);
+        return new Response(HOME_HTML, {
+            headers: {
+                'content-type': 'text/html;charset=UTF-8',
+                'X-Content-Type-Options': 'nosniff',
+                'Referrer-Policy': 'no-referrer',
+            },
+        });
     }
 
     if (url.pathname === '/set') {
