@@ -20,18 +20,22 @@ const HOME_HTML = `<!doctype html>
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AnyNote · share text, code & markdown</title>
+  <title>AnyNote · dispatch text, code & markdown</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --page-bg: #f6f3ea;
-      --paper-bg: #fffdf7;
-      --ink: #24221f;
-      --muted: #706b62;
-      --line: #ded7c8;
-      --accent: #2f6f73;
-      --accent-ink: #ffffff;
-      --accent-soft: rgba(47, 111, 115, 0.12);
-      --code-bg: #0f1717;
+      --ink: #10182b;
+      --paper: #eceff5;
+      --panel: #f7f8fb;
+      --grid: rgba(16,24,43,0.055);
+      --line: #d3d9e4;
+      --muted: #5a6478;
+      --cobalt: #1c3bd6;
+      --cobalt-ink: #ffffff;
+      --cobalt-soft: rgba(28,59,214,0.10);
+      --signal: #ff4d1c;
     }
     * { box-sizing: border-box; }
     html { -webkit-text-size-adjust: 100%; }
@@ -40,107 +44,222 @@ const HOME_HTML = `<!doctype html>
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      background:
-        radial-gradient(circle at top left, rgba(47, 111, 115, 0.14), transparent 32rem),
-        var(--page-bg);
+      background-color: var(--paper);
+      background-image:
+        linear-gradient(var(--grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+      background-size: 26px 26px;
       color: var(--ink);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       font-size: 16px;
       line-height: 1.6;
     }
     .shell {
-      width: min(100% - 32px, 720px);
+      width: min(100% - 32px, 660px);
       margin: 0 auto;
-      padding: clamp(28px, 7vw, 72px) 0 32px;
+      padding: clamp(28px, 7vw, 68px) 0 32px;
       flex: 1 0 auto;
     }
-    header { margin-bottom: 24px; }
-    .brand {
-      display: inline-flex;
-      align-items: baseline;
+    header { margin-bottom: 22px; }
+    .eyebrow {
+      display: flex;
+      align-items: center;
       gap: 10px;
-      font-size: clamp(2rem, 6vw, 2.8rem);
-      font-weight: 780;
-      letter-spacing: -0.04em;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11.5px;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
     }
-    .brand .dot { color: var(--accent); }
-    .tagline { margin: 6px 0 0; color: var(--muted); }
+    .eyebrow::before {
+      content: "";
+      width: 22px;
+      height: 8px;
+      background: var(--signal);
+      clip-path: polygon(0 0, 100% 0, 82% 100%, 0 100%);
+    }
+    .brand {
+      margin: 12px 0 0;
+      font-family: "Space Grotesk", sans-serif;
+      font-size: clamp(2.4rem, 8vw, 3.5rem);
+      font-weight: 700;
+      letter-spacing: -0.045em;
+      line-height: 0.98;
+    }
+    .brand b { color: var(--cobalt); font-weight: 700; }
+    .tagline {
+      margin: 10px 0 0;
+      max-width: 44ch;
+      color: var(--muted);
+      font-size: 15px;
+    }
     .card {
-      padding: clamp(18px, 4vw, 28px);
+      position: relative;
+      padding: clamp(18px, 4vw, 26px);
       border: 1px solid var(--line);
-      border-radius: 22px;
-      background: rgba(255, 253, 247, 0.94);
-      box-shadow: 0 24px 80px rgba(47, 41, 31, 0.12);
+      border-radius: 4px;
+      background: var(--panel);
+      box-shadow: 0 1px 0 var(--line), 0 30px 60px -34px rgba(16,24,43,0.4);
     }
-    label { display: block; font-weight: 640; margin-bottom: 8px; }
+    label {
+      display: block;
+      margin-bottom: 9px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11.5px;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
     textarea {
       width: 100%;
       min-height: 220px;
-      padding: 14px 16px;
+      padding: 15px 16px;
       border: 1px solid var(--line);
-      border-radius: 14px;
-      background: var(--paper-bg);
+      border-radius: 3px;
+      background:
+        repeating-linear-gradient(transparent, transparent 25px, rgba(16,24,43,0.045) 25px, rgba(16,24,43,0.045) 26px) 0 12px / 100% 26px,
+        #ffffff;
       color: var(--ink);
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-family: "JetBrains Mono", ui-monospace, Menlo, monospace;
       font-size: 14px;
-      line-height: 1.6;
+      line-height: 26px;
       resize: vertical;
     }
+    textarea::placeholder { color: #9aa3b5; }
     textarea:focus,
-    input:focus { outline: 3px solid var(--accent-soft); outline-offset: 2px; border-color: var(--accent); }
+    .field input:focus {
+      outline: none;
+      border-color: var(--cobalt);
+      box-shadow: 0 0 0 3px var(--cobalt-soft);
+    }
     .row {
       display: flex;
       flex-wrap: wrap;
+      align-items: stretch;
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .field { flex: 1 1 220px; position: relative; display: flex; }
+    .field .prefix {
+      display: flex;
       align-items: center;
-      gap: 14px;
-      margin-top: 16px;
-    }
-    .field { flex: 1 1 220px; }
-    .field input {
-      width: 100%;
-      padding: 11px 14px;
+      padding: 0 6px 0 13px;
       border: 1px solid var(--line);
-      border-radius: 12px;
-      background: var(--paper-bg);
-      color: var(--ink);
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: 14px;
+      border-right: 0;
+      border-radius: 3px 0 0 3px;
+      background: #fff;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 13px;
+      color: #9aa3b5;
+      white-space: nowrap;
     }
-    .hint { margin: 8px 2px 0; font-size: 12.5px; color: var(--muted); }
+    .field input {
+      flex: 1 1 auto;
+      min-width: 0;
+      padding: 12px 14px 12px 2px;
+      border: 1px solid var(--line);
+      border-left: 0;
+      border-radius: 0 3px 3px 0;
+      background: #fff;
+      color: var(--ink);
+      font-family: "JetBrains Mono", monospace;
+      font-size: 13px;
+    }
+    .field input::placeholder { color: #b3bacb; }
+    .hint {
+      margin: 10px 2px 0;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11.5px;
+      letter-spacing: 0.02em;
+      color: var(--muted);
+    }
     button {
       appearance: none;
-      border: 0;
-      border-radius: 12px;
-      padding: 12px 26px;
-      background: var(--accent);
-      color: var(--accent-ink);
+      border: 1px solid var(--ink);
+      border-radius: 3px;
+      padding: 12px 24px;
+      background: var(--cobalt);
+      border-color: var(--cobalt);
+      color: var(--cobalt-ink);
+      font-family: "Space Grotesk", sans-serif;
       font-size: 15px;
-      font-weight: 640;
+      font-weight: 600;
+      letter-spacing: 0.01em;
       cursor: pointer;
-      transition: transform 0.12s, opacity 0.12s;
+      transition: transform 0.12s, box-shadow 0.12s, background 0.12s;
     }
-    button:hover { opacity: 0.92; }
-    button:active { transform: translateY(1px); }
-    button:disabled { opacity: 0.5; cursor: default; }
-    .result { margin-top: 22px; display: none; }
-    .result.show { display: block; }
-    .result h2 { margin: 0 0 12px; font-size: 1rem; color: var(--muted); font-weight: 640; }
+    button:hover { box-shadow: 3px 3px 0 var(--ink); transform: translate(-1px,-1px); }
+    button:active { transform: translate(0,0); box-shadow: none; }
+    button:disabled { opacity: 0.5; cursor: default; box-shadow: none; transform: none; }
+    .ticket { margin-top: 22px; display: none; }
+    .ticket.show { display: block; animation: drop 0.42s cubic-bezier(0.2,0.9,0.3,1) both; }
+    @keyframes drop {
+      from { opacity: 0; transform: translateY(-10px) rotate(-0.6deg); }
+      to { opacity: 1; transform: none; }
+    }
+    .stub {
+      border: 1px solid var(--ink);
+      border-radius: 4px;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 5px 5px 0 var(--ink);
+    }
+    .stub-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 14px 18px;
+      background: var(--ink);
+      color: #fff;
+    }
+    .stub-head .cap {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 10.5px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #97a1ba;
+    }
+    .stub-head .no {
+      margin-top: 3px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: clamp(1.5rem, 6vw, 2.1rem);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: #fff;
+      word-break: break-all;
+    }
+    .stub-head .barcode {
+      flex: 0 0 auto;
+      align-self: stretch;
+      width: 62px;
+      background-image: repeating-linear-gradient(90deg, #fff 0 2px, transparent 2px 4px, #fff 4px 5px, transparent 5px 9px);
+      opacity: 0.85;
+    }
+    .perf {
+      height: 0;
+      border-top: 2px dashed var(--line);
+      margin: 0 -1px;
+    }
+    .rows { padding: 6px 0; }
     .link-row {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 10px 12px;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      background: var(--paper-bg);
-      margin-bottom: 10px;
+      gap: 12px;
+      padding: 11px 18px;
+      border-bottom: 1px solid #eef0f5;
     }
+    .link-row:last-child { border-bottom: 0; }
     .link-row .tag {
-      flex: 0 0 78px;
-      font: 600 11px ui-monospace, monospace;
-      letter-spacing: 0.06em;
+      flex: 0 0 66px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: var(--accent);
+      color: var(--cobalt);
     }
     .link-row a {
       flex: 1 1 auto;
@@ -150,40 +269,60 @@ const HOME_HTML = `<!doctype html>
       white-space: nowrap;
       color: var(--ink);
       text-decoration: none;
-      font-family: ui-monospace, monospace;
-      font-size: 13px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 12.5px;
     }
-    .link-row a:hover { text-decoration: underline; }
+    .link-row a:hover { color: var(--cobalt); text-decoration: underline; }
     .copy {
       flex: 0 0 auto;
-      padding: 5px 12px;
-      font-size: 12.5px;
-      border-radius: 8px;
+      padding: 5px 11px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border-radius: 3px;
       background: transparent;
-      color: var(--accent);
+      color: var(--muted);
       border: 1px solid var(--line);
-      font-weight: 600;
     }
-    .error { margin-top: 14px; color: #b3261e; font-size: 14px; min-height: 1.2em; }
+    .copy:hover { box-shadow: none; transform: none; border-color: var(--cobalt); color: var(--cobalt); }
+    .copy.done { color: var(--signal); border-color: var(--signal); }
+    .error {
+      margin-top: 14px;
+      font-family: "JetBrains Mono", monospace;
+      color: var(--signal);
+      font-size: 13px;
+      min-height: 1.2em;
+    }
     footer {
       flex-shrink: 0;
-      padding: 20px 0 28px;
+      padding: 22px 0 30px;
       text-align: center;
+      font-family: "JetBrains Mono", monospace;
       color: var(--muted);
-      font-size: 13px;
+      font-size: 12px;
+      letter-spacing: 0.02em;
     }
-    footer a { color: var(--accent); }
+    footer a { color: var(--cobalt); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+    :focus-visible { outline: 3px solid var(--cobalt-soft); outline-offset: 2px; }
     @media (max-width: 480px) {
-      .card { border-radius: 16px; }
       #submit { width: 100%; }
+      .stub-head .barcode { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .ticket.show { animation: none; }
+      button:hover { transform: none; }
     }
   </style>
 </head>
 <body>
   <main class="shell">
     <header>
-      <div class="brand">AnyNote<span class="dot">.</span></div>
-      <p class="tagline">Share text, code &amp; markdown with a single link.</p>
+      <div class="eyebrow">Dispatch desk</div>
+      <h1 class="brand">Any<b>Note</b></h1>
+      <p class="tagline">Drop in text, code, or markdown. Get back one claim number that opens it four ways.</p>
     </header>
 
     <section class="card">
@@ -192,17 +331,27 @@ const HOME_HTML = `<!doctype html>
 
       <div class="row">
         <div class="field">
-          <input id="key" type="text" placeholder="custom-key (optional)" autocomplete="off" spellcheck="false" />
+          <span class="prefix">linkof.link/</span>
+          <input id="key" type="text" placeholder="claim number (optional)" autocomplete="off" spellcheck="false" aria-label="Custom claim number" />
         </div>
-        <button id="submit" type="button">Create link</button>
+        <button id="submit" type="button">Dispatch</button>
       </div>
-      <p class="hint">Leave blank for a random key. Letters, digits, - and _ only.</p>
+      <p class="hint">Leave blank and we assign one. Letters, digits, - and _ only.</p>
 
-      <p class="error" id="error"></p>
+      <p class="error" id="error" role="alert"></p>
 
-      <div class="result" id="result">
-        <h2>Your links</h2>
-        <div id="links"></div>
+      <div class="ticket" id="result" aria-live="polite">
+        <div class="stub">
+          <div class="stub-head">
+            <div>
+              <div class="cap">Claim number</div>
+              <div class="no" id="claimNo"></div>
+            </div>
+            <div class="barcode" aria-hidden="true"></div>
+          </div>
+          <div class="perf" aria-hidden="true"></div>
+          <div class="rows" id="links"></div>
+        </div>
       </div>
     </section>
   </main>
@@ -221,6 +370,7 @@ const HOME_HTML = `<!doctype html>
     const errEl = document.getElementById('error');
     const resultEl = document.getElementById('result');
     const linksEl = document.getElementById('links');
+    const claimEl = document.getElementById('claimNo');
 
     const VIEWS = [
       { tag: 'source', suffix: '' },
@@ -237,6 +387,7 @@ const HOME_HTML = `<!doctype html>
     }
 
     function renderLinks(key) {
+      claimEl.textContent = key;
       linksEl.textContent = '';
       for (const v of VIEWS) {
         const href = api + '/' + encodeURIComponent(key) + v.suffix;
@@ -261,7 +412,8 @@ const HOME_HTML = `<!doctype html>
           try {
             await navigator.clipboard.writeText(href);
             copy.textContent = 'Copied';
-            setTimeout(() => { copy.textContent = 'Copy'; }, 1400);
+            copy.classList.add('done');
+            setTimeout(() => { copy.textContent = 'Copy'; copy.classList.remove('done'); }, 1400);
           } catch (e) {
             copy.textContent = 'Failed';
             setTimeout(() => { copy.textContent = 'Copy'; }, 1400);
@@ -289,7 +441,7 @@ const HOME_HTML = `<!doctype html>
       if (!key) key = randomKey(6);
 
       btn.disabled = true;
-      btn.textContent = 'Saving…';
+      btn.textContent = 'Dispatching…';
       try {
         const res = await fetch(api + '/set', {
           method: 'POST',
@@ -302,7 +454,7 @@ const HOME_HTML = `<!doctype html>
         errEl.textContent = 'Failed to save: ' + e.message;
       } finally {
         btn.disabled = false;
-        btn.textContent = 'Create link';
+        btn.textContent = 'Dispatch';
       }
     }
 
