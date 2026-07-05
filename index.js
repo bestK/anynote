@@ -1,4 +1,6 @@
-LIST_PASSWD = 'default_password';
+// LIST_PASSWD 由 Cloudflare Worker 密钥注入（Service Worker 格式下密钥以全局变量暴露）。
+// 配置：wrangler secret put LIST_PASSWD  （或在 Dashboard -> Settings -> Variables 添加）
+// 未配置时 /list 接口一律拒绝访问，不再使用硬编码默认口令。
 
 addEventListener('fetch', event => {
     event.respondWith(handleRequest(event.request));
@@ -31,15 +33,14 @@ async function handleRequest(request) {
     }
 
     if (url.pathname === '/list') {
+        // 未配置密钥则拒绝，避免误开放
+        const expected = typeof LIST_PASSWD !== 'undefined' ? LIST_PASSWD : null;
+        const passwd = url.searchParams.get('passwd');
+        if (!expected || passwd !== expected) {
+            return new Response('Password not correct', { status: 401 });
+        }
         const value = await NOTE.list();
-        passwd = url.searchParams.get('passwd');
-        if (passwd !== LIST_PASSWD) {
-            return new Response('Password not correct', { status: 400 });
-        }
-        let key_list = [];
-        for (var key of value.keys) {
-            key_list.push(key.name);
-        }
+        const key_list = value.keys.map(k => k.name);
         return new Response(key_list.join('\r\n'));
     }
 
