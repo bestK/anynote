@@ -91,7 +91,7 @@ const HOME_HTML = `<!doctype html>
     .row {
       display: flex;
       flex-wrap: wrap;
-      align-items: flex-end;
+      align-items: center;
       gap: 14px;
       margin-top: 16px;
     }
@@ -106,7 +106,7 @@ const HOME_HTML = `<!doctype html>
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
       font-size: 14px;
     }
-    .hint { margin: 6px 2px 0; font-size: 12.5px; color: var(--muted); }
+    .hint { margin: 8px 2px 0; font-size: 12.5px; color: var(--muted); }
     button {
       appearance: none;
       border: 0;
@@ -193,10 +193,10 @@ const HOME_HTML = `<!doctype html>
       <div class="row">
         <div class="field">
           <input id="key" type="text" placeholder="custom-key (optional)" autocomplete="off" spellcheck="false" />
-          <p class="hint">Leave blank for a random key. Letters, digits, - and _ only.</p>
         </div>
         <button id="submit" type="button">Create link</button>
       </div>
+      <p class="hint">Leave blank for a random key. Letters, digits, - and _ only.</p>
 
       <p class="error" id="error"></p>
 
