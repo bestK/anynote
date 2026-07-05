@@ -102,3 +102,8 @@ dist
 
 # TernJS port file
 .tern-port
+
+# Wrangler / Cloudflare
+.wrangler/
+# 真实部署配置（含 KV namespace id 等账号信息），仅提交 wrangler.toml.example
+wrangler.toml

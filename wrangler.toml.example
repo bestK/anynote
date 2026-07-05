@@ -1,0 +1,21 @@
+# 复制为 wrangler.toml 并填入你自己的值后部署：
+#   cp wrangler.toml.example wrangler.toml
+#   npx wrangler deploy
+#
+# wrangler.toml 已被 .gitignore 忽略，因为它包含账号相关的 KV namespace id。
+
+name = "note"                        # 你的 Worker 名称
+main = "index.js"
+compatibility_date = "2024-09-23"
+workers_dev = true
+
+# KV 绑定：代码中通过全局 NOTE 访问。
+# id 在 Cloudflare 控制台 Workers & Pages -> KV，或 `wrangler kv namespace list` 中查看。
+[[kv_namespaces]]
+binding = "NOTE"
+id = "<your-kv-namespace-id>"
+
+# 可选：绑定自定义域。没有自定义域可整段删除，仅用 workers.dev 子域访问。
+[[routes]]
+pattern = "note.example.com"
+custom_domain = true
