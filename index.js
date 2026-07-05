@@ -339,65 +339,176 @@ async function handleRequest(request) {
                 },
             });
         } else if (isGist) {
-            const html = `
-            <!DOCTYPE html>
-                <html>
-                <head>
-                    <meta charset="UTF-8" />
-                    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-                    <title>Simple code editor for vue.js</title>
-                    <!-- css -->
-                    <link rel="stylesheet" href="https://${jsdelivrHost}/gh/justcaliturner/simple-code-editor@master/browser/css/simple-code-editor.css" />
-                    <link rel="stylesheet" href="https://${jsdelivrHost}/gh/justcaliturner/simple-code-editor@master/browser/css/themes/themes-base16.css" />
-                    <link rel="stylesheet" href="https://${jsdelivrHost}/gh/justcaliturner/simple-code-editor@master/browser/css/themes/themes.css" />
-                    <style>
-                      ::-webkit-scrollbar {
-                        width: 0;
-                        height: 0;
-                      }
-                    </style>
-                </head>
+            if (value === null) {
+                return new Response('Note not found', {
+                    status: 404,
+                    headers: {
+                        'content-type': 'text/plain;charset=UTF-8',
+                        'X-Content-Type-Options': 'nosniff',
+                        'Referrer-Policy': 'no-referrer',
+                    },
+                });
+            }
 
-                <body>
-                    <div id="app">
-                    <code-editor
-                        style="overflow: hidden; margin:0 auto"
-                        theme="github"
-                        :line-nums="true"
-                        :read-only="true" 
-                        v-model="value"
-                        width="100vh" 
-                        height="100vh"
-                        :languages="[['javascript', 'JS'], ['html', 'HTML'],['python', 'python'],['css', 'CSS'],['java', 'Java']]"
-                    ></code-editor>
-                     
-                    </div>
-                    <!-- js -->
-                    <script src="https://${jsdelivrHost}/gh/justcaliturner/simple-code-editor@master/browser/deps/vue@3.3.4.min.js"></script>
-                    <script src="https://${jsdelivrHost}/gh/justcaliturner/simple-code-editor@master/browser/deps/highlight.min.js"></script>
-                    <script src="https://${jsdelivrHost}/gh/justcaliturner/simple-code-editor@master/browser/js/simple-code-editor.js"></script>
-                    
-                    <script>
-                    const app = Vue.createApp({
-                        components: {
-                        "code-editor": CodeEditor,
-                        },
-                        data() {
-                        return {
-                            value: \`${value}\`,
-                        };
-                        },
-                    });
-                    app.mount("#app");
-                    </script>
-                </body>
-                </html>
-            
-            `;
+            const gistCode = JSON.stringify(value || '').replace(/</g, '\\u003c');
+            const html = `<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AnyNote Gist</title>
+  <link rel="stylesheet" href="https://${jsdelivrHost}/npm/@highlightjs/cdn-assets@11.9.0/styles/github-dark.min.css" />
+  <style>
+    :root {
+      --page-bg: #f6f3ea;
+      --ink: #24221f;
+      --line: #ded7c8;
+      --accent: #2f6f73;
+      --code-bg: #0f1717;
+      --bar-bg: #1b2626;
+      --gutter: #4a5657;
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(47, 111, 115, 0.14), transparent 32rem),
+        var(--page-bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    .gist-shell {
+      width: min(100% - 32px, 1000px);
+      margin: 0 auto;
+      padding: clamp(16px, 4vw, 48px) 0;
+    }
+    .gist-card {
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      overflow: hidden;
+      background: var(--code-bg);
+      box-shadow: 0 24px 80px rgba(47, 41, 31, 0.18);
+    }
+    .gist-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 16px;
+      background: var(--bar-bg);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .gist-lang {
+      font: 600 12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #9fb3b0;
+    }
+    .gist-copy {
+      appearance: none;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 8px;
+      padding: 5px 12px;
+      background: transparent;
+      color: #d6e2e0;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .gist-copy:hover { background: rgba(255, 255, 255, 0.08); }
+    .gist-copy:active { transform: translateY(1px); }
+    .gist-body {
+      display: flex;
+      max-height: 82vh;
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      font-size: clamp(12.5px, 1.4vw, 14px);
+      line-height: 1.6;
+    }
+    .gist-gutter {
+      flex: 0 0 auto;
+      padding: 16px 12px 16px 16px;
+      text-align: right;
+      color: var(--gutter);
+      background: rgba(0, 0, 0, 0.22);
+      user-select: none;
+      white-space: pre;
+    }
+    .gist-body pre {
+      margin: 0;
+      flex: 1 1 auto;
+      padding: 16px;
+      overflow: visible;
+    }
+    .gist-body code {
+      background: transparent;
+      padding: 0;
+      white-space: pre;
+    }
+    @media (max-width: 560px) {
+      .gist-shell { width: min(100% - 16px, 1000px); padding: 8px 0; }
+      .gist-card { border-radius: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="gist-shell">
+    <div class="gist-card">
+      <div class="gist-bar">
+        <span class="gist-lang" id="lang">code</span>
+        <button class="gist-copy" id="copy" type="button">复制</button>
+      </div>
+      <div class="gist-body">
+        <div class="gist-gutter" id="gutter" aria-hidden="true">1</div>
+        <pre><code id="code"></code></pre>
+      </div>
+    </div>
+  </main>
+  <script src="https://${jsdelivrHost}/npm/@highlightjs/cdn-assets@11.9.0/highlight.min.js"></script>
+  <script>
+    const source = ${gistCode};
+    const codeEl = document.getElementById('code');
+    const gutterEl = document.getElementById('gutter');
+    const langEl = document.getElementById('lang');
+
+    // 行号：按源码实际行数生成，与代码逐行对齐
+    const lineCount = source.split('\\n').length;
+    gutterEl.textContent = Array.from({ length: lineCount }, (_, i) => i + 1).join('\\n');
+
+    try {
+      if (window.hljs) {
+        const result = hljs.highlightAuto(source);
+        codeEl.innerHTML = result.value;
+        langEl.textContent = result.language || 'text';
+      } else {
+        codeEl.textContent = source;
+      }
+    } catch (e) {
+      codeEl.textContent = source;
+    }
+
+    const copyBtn = document.getElementById('copy');
+    copyBtn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(source);
+        copyBtn.textContent = '已复制';
+        setTimeout(() => { copyBtn.textContent = '复制'; }, 1500);
+      } catch (e) {
+        copyBtn.textContent = '复制失败';
+        setTimeout(() => { copyBtn.textContent = '复制'; }, 1500);
+      }
+    });
+  </script>
+</body>
+</html>`;
             return new Response(html, {
                 headers: {
                     'content-type': 'text/html;charset=UTF-8',
+                    'X-Content-Type-Options': 'nosniff',
+                    'Referrer-Policy': 'no-referrer',
                 },
             });
         }
