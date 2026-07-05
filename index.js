@@ -58,7 +58,7 @@ async function handleRequest(request) {
         // 检查 IP 是否来自中国
         const isChina = cf && cf.country === 'CN';
         const jsdelivrHost = isChina
-            ? 'jsd.onmicrosoft.cn'
+            ? 'cdn.jsdmirror.com'
             : 'cdn.jsdelivr.net';
 
         if (isHtml) {
