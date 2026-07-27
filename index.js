@@ -773,6 +773,21 @@ async function handleRequest(request) {
                               line-height: 1.65;
                             }
 
+                            .markdown-body .mermaid-diagram {
+                              margin: 1.25em 0;
+                              padding: 1rem;
+                              overflow-x: auto;
+                              border: 1px solid var(--line);
+                              border-radius: 4px;
+                              background: #fff;
+                              text-align: center;
+                            }
+
+                            .markdown-body .mermaid-diagram svg {
+                              max-width: 100%;
+                              height: auto;
+                            }
+
                             @media (max-width: 560px) {
                               .page-shell {
                                 width: min(100% - 20px, 860px);
@@ -793,9 +808,65 @@ async function handleRequest(request) {
                           <script src="https://${jsdelivrHost}/npm/marked@12.0.2/marked.min.js"></script>
                           <script src="https://${jsdelivrHost}/npm/dompurify@3.1.6/dist/purify.min.js"></script>
                           <script src="https://${jsdelivrHost}/npm/@highlightjs/cdn-assets@11.9.0/highlight.min.js"></script>
+                          <script src="https://${jsdelivrHost}/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
                           <script>
                             const markdown = ${markdown};
                             const content = document.getElementById('content');
+
+                            function getMermaidSource(block) {
+                              const source = block.textContent.trim();
+                              const isMindmap = block.classList.contains('language-mindmap') ||
+                                block.classList.contains('lang-mindmap');
+                              if (isMindmap && !/^mindmap\\b/i.test(source)) {
+                                return 'mindmap\\n' + source;
+                              }
+                              return source;
+                            }
+
+                            async function renderMermaidBlocks() {
+                              const blocks = Array.from(
+                                content.querySelectorAll(
+                                  'pre code.language-mermaid, pre code.lang-mermaid, pre code.language-mindmap, pre code.lang-mindmap'
+                                )
+                              );
+
+                              if (!blocks.length || !window.mermaid) {
+                                return;
+                              }
+
+                              mermaid.initialize({
+                                startOnLoad: false,
+                                securityLevel: 'strict',
+                                theme: 'default',
+                              });
+
+                              const diagrams = blocks.map((block, index) => {
+                                const source = getMermaidSource(block);
+                                const diagram = document.createElement('div');
+                                diagram.id = 'mermaid-diagram-' + index;
+                                diagram.className = 'mermaid mermaid-diagram';
+                                diagram.textContent = source;
+                                block.closest('pre').replaceWith(diagram);
+                                return { diagram, source };
+                              });
+
+                              try {
+                                await mermaid.run({ nodes: diagrams.map(({ diagram }) => diagram) });
+                              } catch (error) {
+                                console.error(error);
+                                diagrams.forEach(({ diagram, source }) => {
+                                  if (diagram.querySelector('svg')) {
+                                    return;
+                                  }
+                                  const pre = document.createElement('pre');
+                                  const code = document.createElement('code');
+                                  code.className = 'language-mermaid';
+                                  code.textContent = source;
+                                  pre.appendChild(code);
+                                  diagram.replaceWith(pre);
+                                });
+                              }
+                            }
 
                             try {
                               marked.setOptions({
@@ -810,11 +881,15 @@ async function handleRequest(request) {
 
                               content.innerHTML = cleanHtml;
 
-                              if (window.hljs) {
-                                content.querySelectorAll('pre code').forEach((block) => {
-                                  hljs.highlightElement(block);
-                                });
-                              }
+                              renderMermaidBlocks().catch((error) => {
+                                console.error(error);
+                              }).then(() => {
+                                if (window.hljs) {
+                                  content.querySelectorAll('pre code').forEach((block) => {
+                                    hljs.highlightElement(block);
+                                  });
+                                }
+                              });
 
                               content.querySelectorAll('a[href]').forEach((link) => {
                                 if (link.hostname !== location.hostname) {
